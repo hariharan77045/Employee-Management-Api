@@ -1,0 +1,9 @@
+# Copy this file to application-local.properties (same folder) and fill in your values.
+# application-local.properties is git-ignored, so your secrets stay on your machine.
+# Alternatively, set the environment variables DB_PASSWORD and JWT_SECRET.
+
+spring.datasource.password=your-postgres-password
+
+# At least 32 random characters. One way to generate it:
+#   node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
+app.jwt.secret=replace-with-a-long-random-string
