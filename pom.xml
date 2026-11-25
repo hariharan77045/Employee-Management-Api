@@ -38,6 +38,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		<!-- /actuator/health for Docker, Kubernetes and Render health checks. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 		<!-- Signs and verifies the JWT access tokens (HS256) issued by /api/auth/login. -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>

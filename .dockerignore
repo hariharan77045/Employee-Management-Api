@@ -1,0 +1,13 @@
+target/
+.idea/
+.vscode/
+.git/
+*.iml
+db/
+k8s/
+docker-compose.yml
+Jenkinsfile
+README.md
+HELP.md
+# Never bake local secrets into an image.
+src/main/resources/application-local.properties
