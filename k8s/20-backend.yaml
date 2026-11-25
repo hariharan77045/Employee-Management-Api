@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: employeehub
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: employeehub
+spec:
+  # Start with 1: on a fresh database the first pod creates login accounts on start-up.
+  # Afterwards scale freely: kubectl -n employeehub scale deployment backend --replicas=2
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          # Jenkins replaces this with the image it just pushed (kubectl set image).
+          image: employeehub-backend:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_URL
+              value: jdbc:postgresql://db:5432/employee_management_project
+            - name: DB_USERNAME
+              value: postgres
+            - name: CORS_ALLOWED_ORIGINS
+              value: http://localhost:30080
+          envFrom:
+            - secretRef:
+                name: employeehub-secrets # DB_PASSWORD and JWT_SECRET
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            periodSeconds: 5
+            failureThreshold: 36 # up to 3 minutes for the first start
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              memory: 768Mi
